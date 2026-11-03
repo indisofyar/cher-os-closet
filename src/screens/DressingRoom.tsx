@@ -5,9 +5,9 @@ import { DISPLAY, printClass } from '../config';
 import { PlaidDefs } from '../components/PlaidDefs';
 import { WARDROBE, outfitCheck, pickShoes, type Gender, type Garment } from '../data/garments';
 
-function GarmentSvg({ item, style }: { item: Garment; style?: React.CSSProperties }) {
+function GarmentSvg({ item, style, className }: { item: Garment; style?: React.CSSProperties; className?: string }) {
   return (
-    <svg role="img" aria-label={item.name} viewBox="0 0 100 100" style={style}>
+    <svg className={className} role="img" aria-label={item.name} viewBox="0 0 100 100" style={style}>
       <path d={item.d} fill={item.fill} stroke="#15143F" strokeWidth="1.6" strokeLinejoin="round" />
       <path d={item.d2} fill="none" stroke="#15143F" strokeWidth="1.2" strokeLinecap="round" />
     </svg>
@@ -143,9 +143,9 @@ export function DressingRoom() {
           </div>
         ) : (
           <div className="full-look">
-            <GarmentSvg item={top} style={{ width: '46%', maxWidth: 230, height: 'auto', flex: 'none' }} />
-            <GarmentSvg item={bottom} style={{ width: '40%', maxWidth: 200, height: 'auto', marginTop: '-12%', flex: 'none' }} />
-            <GarmentSvg item={shoes} style={{ width: '30%', maxWidth: 150, height: 'auto', marginTop: '-4%', flex: 'none' }} />
+            <GarmentSvg className="look-top" item={top} style={{ width: '46%', maxWidth: 230, height: 'auto', flex: 'none' }} />
+            <GarmentSvg className="look-bottom" item={bottom} style={{ width: '40%', maxWidth: 200, height: 'auto', marginTop: '-12%', flex: 'none' }} />
+            <GarmentSvg className="look-shoes" item={shoes} style={{ width: '30%', maxWidth: 150, height: 'auto', marginTop: '-4%', flex: 'none' }} />
             <div className="verdict-row" aria-live="polite">
               <span className="verdict" style={{ background: check.bg, color: check.fg }}>
                 {check.label}

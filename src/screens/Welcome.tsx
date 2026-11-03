@@ -24,10 +24,10 @@ export function Welcome() {
           <sup>™</sup>
         </h1>
         <div className="welcome-copy">
-          <p style={{ margin: 0, fontSize: 30, lineHeight: 1.05, color: '#FFD1EA' }}>
+          <p className="welcome-lede">
             Clueless about what to wear to prom... or even just Tesco? We’ve got you.
           </p>
-          <p style={{ margin: 0, fontSize: 22, lineHeight: 1.1, color: '#ECEBFF' }}>
+          <p className="welcome-body">
             Upload your wardrobe and Cher will mix, match and style your pieces into totally wearable outfits. Spotted
             something online? Try before you buy and see if it actually works with what you already own. Your closet
             stays fabulous. Landfill stays hungry.

@@ -16,18 +16,16 @@ type Props = {
   title: string;
   tag: string;
   badge?: string;
-  /** Extra room padding, used where stickers overhang the monitor. */
-  roomy?: boolean;
   /** Elements positioned on the monitor shell itself (outside the screen). */
   overlay?: ReactNode;
   footer?: ReactNode;
   children: ReactNode;
 };
 
-export function Monitor({ title, tag, badge = 'CherOS', roomy, overlay, footer, children }: Props) {
+export function Monitor({ title, tag, badge = 'CherOS', overlay, footer, children }: Props) {
   const time = useClock();
   return (
-    <div className={`room shell-${DISPLAY.shell}${roomy ? ' roomy' : ''}`}>
+    <div className={`room shell-${DISPLAY.shell}`}>
       <div className="monitor">
         {overlay}
         <div className="bezel">

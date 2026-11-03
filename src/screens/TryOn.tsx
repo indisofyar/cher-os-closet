@@ -51,7 +51,6 @@ export function TryOn() {
     <Monitor
       title="CherOS · WARDROBE"
       tag={saved ? 'OUTFIT SAVED' : 'ON YOU'}
-      roomy
       overlay={<Stickers key={replay} />}
       footer={
         <nav className="cats" aria-label="Navigation">
