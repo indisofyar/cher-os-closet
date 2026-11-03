@@ -297,25 +297,4 @@ a:hover { color: #15143F; }
   .shine { animation: none; opacity: 0; }
 }
 
-@media (max-width: 760px) {
-  .room { padding: 20px 16px 28px; }
-  .monitor { padding: 20px 16px 0; border-radius: 32px 32px 80px 80px / 32px 32px 60px 60px; }
-  .bezel { padding: 14px; border-radius: 22px; }
-  .screen { height: 640px; }
-  .body-row { flex-direction: column; }
-  .body-row > .panel, .body-row > .welcome-main { flex: 1 1 0; }
-  .body-row > .side { flex: none; }
-  .panel.photo { flex-direction: column; }
-  .finder { flex: none; min-height: 300px; }
-  .photo-copy { flex: none; }
-  .verdict-row { flex-wrap: wrap; }
-  .stage-label { right: 52px; }
-  .stk.holo, .sticker-star { display: none; }
-  .side, .side.narrow { flex-direction: row; padding: 12px; min-height: 48px; }
-  .side .big { flex: 1; min-height: 64px; font-size: 20px; }
-  .finder { max-width: none; }
-  .welcome-title { font-size: 40px; }
-  .stage { flex: none; min-height: 380px; }
-  .stk { font-size: 22px !important; }
-}
 .big:disabled { opacity: .65; cursor: progress; }

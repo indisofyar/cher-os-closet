@@ -7,6 +7,7 @@ import { BodyPhoto } from './screens/BodyPhoto';
 import { DressingRoom } from './screens/DressingRoom';
 import { TryOn } from './screens/TryOn';
 import './styles.css';
+import './pocket.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

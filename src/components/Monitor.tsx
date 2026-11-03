@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { DISPLAY } from '../config';
 
-function useClock() {
+export function useClock() {
   const fmt = () =>
     new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }).toUpperCase();
   const [time, setTime] = useState(fmt);

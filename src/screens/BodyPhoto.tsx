@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Monitor } from '../components/Monitor';
+import { Pocket } from '../components/Pocket';
+import { useIsPocket } from '../hooks/useIsPocket';
 import { DISPLAY, printClass } from '../config';
 import { useAppState } from '../state/AppState';
 
@@ -8,6 +10,13 @@ type Phase = 'idle' | 'count' | 'done';
 
 /** Seconds on the self-timer before the photo is taken. */
 const COUNTDOWN = 10;
+
+const POCKET_TIPS = [
+  'Head to toe in frame. Feet too.',
+  'Stand about 2 metres back.',
+  'Plain wall, good light.',
+  'Wear something fitted.',
+];
 
 const TIPS = [
   'Head to toe in frame. Feet too.',
@@ -36,6 +45,7 @@ function toDataUrl(src: CanvasImageSource, w: number, h: number, mirror = false)
 export function BodyPhoto() {
   const { bodyPhoto, setBodyPhoto } = useAppState();
   const navigate = useNavigate();
+  const pocket = useIsPocket();
   const [phase, setPhase] = useState<Phase>(bodyPhoto ? 'done' : 'idle');
   const [count, setCount] = useState(COUNTDOWN);
   const [error, setError] = useState<string | null>(null);
@@ -94,7 +104,7 @@ export function BodyPhoto() {
       v.srcObject = streamRef.current;
       void v.play().catch(() => {});
     }
-  }, [live]);
+  }, [live, pocket]);
 
   // Turn the camera on as soon as the screen opens (and again after Retake).
   useEffect(() => {
@@ -176,6 +186,96 @@ export function BodyPhoto() {
             ? 'LINE YOURSELF UP, THEN PRESS TAKE PHOTO.'
             : 'LINE YOURSELF UP WITH THE OUTLINE.';
 
+  const openPicker = () => fileRef.current?.click();
+  const fileInput = (
+    <input
+      ref={fileRef}
+      type="file"
+      accept="image/*"
+      className="visually-hidden"
+      tabIndex={-1}
+      aria-label="Upload a full-length photo"
+      onChange={(e) => {
+        onFile(e.target.files?.[0]);
+        e.target.value = '';
+      }}
+    />
+  );
+  const finderContents = (
+    <>
+      {live && <video ref={videoRef} muted playsInline aria-label="Camera preview" />}
+      {done && bodyPhoto && <img className="shot" src={bodyPhoto} alt="Your body photo" />}
+    </>
+  );
+
+  if (pocket) {
+    const left = done ? { label: 'Retake', onClick: retake } : { label: 'Upload photo', onClick: openPicker };
+    const right = done
+      ? { label: 'Let’s go', to: '/wardrobe' }
+      : { label: 'Take photo', onClick: () => void snap() };
+    const heading = error
+      ? error
+      : cam === 'starting'
+        ? 'Warming up the camera...'
+        : counting
+          ? 'Hold still...'
+          : done
+            ? 'Looking good!'
+            : 'Take a full-length photo';
+    return (
+      <Pocket
+        title="SETUP · STEP 1"
+        status={done ? 'SAVED' : 'NEW USER'}
+        controls={{ b: left, a: right, start: { label: 'Start: skip for now', to: '/wardrobe' } }}
+      >
+        <main className="pk-photo">
+          <div className="pk-finder">
+            {finderContents}
+            <span className="pk-corner pk-c1" aria-hidden="true" />
+            <span className="pk-corner pk-c2" aria-hidden="true" />
+            <span className="pk-corner pk-c3" aria-hidden="true" />
+            <span className="pk-corner pk-c4" aria-hidden="true" />
+            <span className="pk-rec">
+              <span className="pk-dot blinky" aria-hidden="true" />
+              CAM
+            </span>
+            {!(done && bodyPhoto) && <BodyOutline captured={done} overVideo={live} />}
+            {counting && (
+              <div className="pk-count" aria-live="assertive">
+                {count}
+              </div>
+            )}
+            {done && <div className="pk-got-it">GOT IT!</div>}
+          </div>
+          <h1 className="pk-heading" aria-live="polite">
+            {heading}
+          </h1>
+          {POCKET_TIPS.map((t, i) => (
+            <div className="pk-tip" key={t}>
+              <b>{i + 1}</b>
+              <span>{t}</span>
+            </div>
+          ))}
+          <div className="pk-actions">
+            <button className="pk-sb" style={{ flex: 1 }} onClick={left.onClick}>
+              {done ? 'Retake' : 'Upload'}
+            </button>
+            {done ? (
+              <button className="pk-sb hot" style={{ flex: 1.3 }} onClick={() => navigate('/wardrobe')}>
+                Let’s go
+              </button>
+            ) : (
+              <button className="pk-sb hot" style={{ flex: 1.3 }} onClick={snap} disabled={cam === 'starting' || counting}>
+                Take photo
+              </button>
+            )}
+          </div>
+          {fileInput}
+        </main>
+      </Pocket>
+    );
+  }
+
   return (
     <Monitor
       title="CherOS · SETUP"
@@ -193,30 +293,18 @@ export function BodyPhoto() {
             Retake
           </button>
         ) : (
-          <button className="big" onClick={() => fileRef.current?.click()}>
+          <button className="big" onClick={openPicker}>
             Upload
             <br />
             Photo
           </button>
         )}
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          className="visually-hidden"
-          tabIndex={-1}
-          aria-label="Upload a full-length photo"
-          onChange={(e) => {
-            onFile(e.target.files?.[0]);
-            e.target.value = '';
-          }}
-        />
+        {fileInput}
       </div>
 
       <main className="panel photo">
         <div className="finder">
-          {live && <video ref={videoRef} muted playsInline aria-label="Camera preview" />}
-          {done && bodyPhoto && <img className="shot" src={bodyPhoto} alt="Your body photo" />}
+          {finderContents}
           <span className="corner c1" aria-hidden="true" />
           <span className="corner c2" aria-hidden="true" />
           <span className="corner c3" aria-hidden="true" />

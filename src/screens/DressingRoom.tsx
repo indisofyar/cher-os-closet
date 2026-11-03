@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Monitor } from '../components/Monitor';
+import { Pocket } from '../components/Pocket';
+import { useIsPocket } from '../hooks/useIsPocket';
 import { DISPLAY, printClass } from '../config';
 import { PlaidDefs } from '../components/PlaidDefs';
 import { WARDROBE, outfitCheck, pickShoes, type Gender, type Garment } from '../data/garments';
@@ -30,7 +32,29 @@ const PlayIcon = () => (
   </svg>
 );
 
+const WomenIcon = ({ w, h, sw }: { w: number; h: number; sw: number }) => (
+  <svg width={w} height={h} viewBox="0 0 26 32" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="#1E1C7A" strokeWidth={sw} strokeLinecap="square">
+    <circle cx="13" cy="10" r="7.5" vectorEffect="non-scaling-stroke" />
+    <path d="M13 18 L13 30 M6.5 24.5 L19.5 24.5" vectorEffect="non-scaling-stroke" />
+  </svg>
+);
+const MenIcon = ({ w, h, sw }: { w: number; h: number; sw: number }) => (
+  <svg width={w} height={h} viewBox="0 0 30 30" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="#1E1C7A" strokeWidth={sw} strokeLinecap="square">
+    <circle cx="11" cy="19" r="7.5" vectorEffect="non-scaling-stroke" />
+    <path d="M17 13 L26 4 M19 4 L26 4 L26 11" vectorEffect="non-scaling-stroke" />
+  </svg>
+);
+
+const SmallTri = ({ dir }: { dir: 'left' | 'right' }) => (
+  <svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true">
+    <path d={dir === 'left' ? 'M0 7 L12 0 L12 14 Z' : 'M12 7 L0 0 L0 14 Z'} fill="#1E1C7A" />
+  </svg>
+);
+
 export function DressingRoom() {
+  const pocket = useIsPocket();
+  /** Which picker the handheld d-pad is driving: 0 = top, 1 = bottom. */
+  const [sel, setSel] = useState(0);
   const [gender, setGender] = useState<Gender>('w');
   const [ti, setTi] = useState(0);
   const [bi, setBi] = useState(0);
@@ -62,6 +86,96 @@ export function DressingRoom() {
   ];
 
   const side = `side ${printClass(DISPLAY.print)}`;
+
+  if (pocket) {
+    const current = viewers[sel];
+    return (
+      <Pocket
+        title="WARDROBE"
+        status={full ? 'OUTFIT CHECK' : 'AUTUMN EDIT'}
+        controls={{
+          up: { label: 'Up: select top', onClick: () => (setSel(0), setFull(false)) },
+          down: { label: 'Down: select bottom', onClick: () => (setSel(1), setFull(false)) },
+          left: { label: 'Left: previous item', onClick: cycle(current.set, current.len, -1) },
+          right: { label: 'Right: next item', onClick: cycle(current.set, current.len, 1) },
+          b: { label: 'B: back', onClick: () => setFull(false) },
+          a: { label: full ? 'A: back' : 'A: try it on', onClick: () => setFull((f) => !f) },
+          select: { label: 'Select: switch women’s and men’s', onClick: () => switchGender(gender === 'm' ? 'w' : 'm') },
+          start: { label: 'Start: auto style', onClick: autoStyle },
+        }}
+        footer={
+          <div className="pk-bar">
+            <div className="pk-bar-links">
+              <Link className="pk-menu" to="/">
+                MENU
+              </Link>
+              <Link className="pk-menu" to="/try-on">
+                ON YOU
+              </Link>
+            </div>
+            <button className="pk-sb hot" onClick={() => setFull((f) => !f)}>
+              {full ? 'Back' : 'Try it on'}
+            </button>
+          </div>
+        }
+      >
+        <PlaidDefs id="plaidY" size={18} />
+        <main className="pk-panel">
+          {!full ? (
+            <div className="pk-pick">
+              <div className="pk-pick-head">
+                <div className="pk-seg-group" role="group" aria-label="Show clothes for">
+                  <button className="pk-seg" aria-pressed={gender === 'w'} onClick={() => switchGender('w')} aria-label="Women’s clothes">
+                    <WomenIcon w={30} h={26} sw={4.5} />
+                  </button>
+                  <button className="pk-seg" aria-pressed={gender === 'm'} onClick={() => switchGender('m')} aria-label="Men’s clothes">
+                    <MenIcon w={32} h={24} sw={4.5} />
+                  </button>
+                </div>
+                <button className="pk-sb" onClick={autoStyle}>
+                  Auto style
+                </button>
+              </div>
+              {viewers.map((v, n) => (
+                <section className="pk-row" aria-label={v.label} key={v.label}>
+                  <button className="pk-sb" aria-label={`Previous ${v.label}`} onClick={cycle(v.set, v.len, -1)}>
+                    <SmallTri dir="left" />
+                  </button>
+                  <button
+                    className={`pk-view${sel === n ? ' selected' : ''}`}
+                    onClick={() => setSel(n)}
+                    aria-pressed={sel === n}
+                    aria-label={`${v.item.name}, ${v.i + 1} of ${v.len}. Select ${v.label} for the d-pad`}
+                  >
+                    <GarmentSvg item={v.item} />
+                    <span className="name">{v.item.name}</span>
+                    <span className="pos">
+                      {v.i + 1}/{v.len}
+                    </span>
+                  </button>
+                  <button className="pk-sb" aria-label={`Next ${v.label}`} onClick={cycle(v.set, v.len, 1)}>
+                    <SmallTri dir="right" />
+                  </button>
+                </section>
+              ))}
+            </div>
+          ) : (
+            <div className="pk-look">
+              <GarmentSvg item={top} style={{ width: 108, height: 108, flex: 'none' }} />
+              <GarmentSvg item={bottom} style={{ width: 92, height: 92, marginTop: -14, flex: 'none' }} />
+              <GarmentSvg item={shoes} style={{ width: 64, height: 64, marginTop: -10, flex: 'none' }} />
+              <div className="pk-verdict-row" aria-live="polite">
+                <span className="pk-verdict" style={{ background: check.bg, color: check.fg }}>
+                  {check.label}
+                </span>
+                <p className="pk-verdict-line">{check.short}</p>
+              </div>
+            </div>
+          )}
+        </main>
+      </Pocket>
+    );
+  }
 
   return (
     <Monitor

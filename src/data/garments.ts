@@ -79,7 +79,8 @@ export function pickShoes(gender: Gender, top: Garment, bottom: Garment): Garmen
   return g('sneaker', '#FFFFFF', 'White sneakers', 1);
 }
 
-export type Verdict = { label: 'TOTALLY' | 'AS IF!' | 'HMMM'; bg: string; fg: string; line: string };
+/** `line` is the iMac copy; `short` the shorter handheld copy. */
+export type Verdict = { label: 'TOTALLY' | 'AS IF!' | 'HMMM'; bg: string; fg: string; line: string; short: string };
 
 export const VERDICT_STYLE = {
   TOTALLY: { bg: '#F2C230', fg: '#15143F' },
@@ -90,19 +91,31 @@ export const VERDICT_STYLE = {
 export function outfitCheck(gender: Gender, top: Garment, bottom: Garment): Verdict {
   const spread = Math.abs(top.formality - bottom.formality);
   if (top.plaid && bottom.plaid)
-    return { label: 'TOTALLY', ...VERDICT_STYLE.TOTALLY, line: 'Matching plaid set. Iconic. Do not change a thing.' };
+    return {
+      label: 'TOTALLY',
+      ...VERDICT_STYLE.TOTALLY,
+      line: 'Matching plaid set. Iconic. Do not change a thing.',
+      short: 'Matching plaid set. Iconic. Do not change a thing.',
+    };
   if (spread >= 3)
     return {
       label: 'AS IF!',
       ...VERDICT_STYLE['AS IF!'],
       line: `${top.name} with ${bottom.name.toLowerCase()}? Formality clash. Try the ${gender === 'm' ? 'navy' : 'lilac'} knit.`,
+      short: `Formality clash. Try the ${gender === 'm' ? 'navy' : 'lilac'} knit.`,
     };
   if (spread === 2)
-    return { label: 'HMMM', ...VERDICT_STYLE.HMMM, line: 'Close. One notch dressier on the bottom and it sings.' };
+    return {
+      label: 'HMMM',
+      ...VERDICT_STYLE.HMMM,
+      line: 'Close. One notch dressier on the bottom and it sings.',
+      short: 'Close. One notch dressier on the bottom and it sings.',
+    };
   return {
     label: 'TOTALLY',
     ...VERDICT_STYLE.TOTALLY,
     line: `Love. The ${top.name.toLowerCase()} and ${bottom.name.toLowerCase()} are basically best friends.`,
+    short: 'These two are basically best friends.',
   };
 }
 
@@ -132,7 +145,7 @@ const ON = {
 export const PLAID_ON_FILL = 'url(#plaidT)';
 
 export type LookPart = { d: string; fill: string; d2: string };
-export type Look = { id: string; name: string; verdict: Verdict['label']; line: string; parts: LookPart[] };
+export type Look = { id: string; name: string; verdict: Verdict['label']; line: string; short: string; parts: LookPart[] };
 
 export const LOOKS: Look[] = [
   {
@@ -140,6 +153,7 @@ export const LOOKS: Look[] = [
     name: 'Yellow plaid set',
     verdict: 'TOTALLY',
     line: 'Matching plaid, white knee socks, white boots. Iconic. Do not change a thing.',
+    short: 'Matching plaid, knee socks, white boots. Iconic.',
     parts: [
       { d: ON.tee, fill: '#FFFFFF', d2: '' },
       { d: ON.skirt, fill: PLAID_ON_FILL, d2: ON.pleats },
@@ -153,6 +167,7 @@ export const LOOKS: Look[] = [
     name: 'Lilac knit + jeans',
     verdict: 'TOTALLY',
     line: 'Soft, easy, still cute. Good for Tesco, honestly good for anywhere.',
+    short: 'Soft, easy, still cute. Good for Tesco.',
     parts: [
       { d: ON.jeans, fill: '#8FB3E0', d2: ON.seams },
       { d: ON.knit, fill: '#C8A2E8', d2: ON.knitRib },
@@ -164,6 +179,7 @@ export const LOOKS: Look[] = [
     name: 'Black turtleneck + trousers',
     verdict: 'HMMM',
     line: 'Very chic, very serious. Add the plaid blazer and it sings.',
+    short: 'Very chic, very serious. Add the plaid blazer.',
     parts: [
       { d: ON.trousers, fill: '#3B3B58', d2: ON.creases },
       { d: ON.turtle, fill: '#1F1F2E', d2: ON.turtleRib },
