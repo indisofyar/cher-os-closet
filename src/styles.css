@@ -1,7 +1,10 @@
 /* CherOS — shared styles, ported from the "Confirmed screens" design canvas. */
 
 html, body { margin: 0; }
-body { font-family: 'VT323', monospace; color: #15143F; background: #F7A8CB; }
+/* Matches the bottom of the room gradient, so overscroll and the area under the
+   browser's toolbars blend in. */
+html { background: #F7A8CB; }
+body { font-family: 'VT323', monospace; color: #15143F; }
 a { color: #2B2A8C; }
 a:hover { color: #15143F; }
 

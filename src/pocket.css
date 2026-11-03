@@ -2,15 +2,19 @@
 
 .pk-room {
   min-height: 100vh; min-height: 100svh; box-sizing: border-box; padding: 14px 16px;
-  background: radial-gradient(ellipse at 50% 30%, #FFEAF3 0%, #FFCDE3 50%, #F7A8CB 100%);
-  display: flex; flex-direction: column; align-items: center; overflow: hidden;
+  /* Top colour = the theme-color meta, bottom = the html background, so the
+     browser's status bar and toolbar tint seamlessly into the page. */
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255,234,243,.9) 0%, rgba(255,234,243,0) 60%),
+    linear-gradient(180deg, #FFD6E7 0%, #FFCDE3 45%, #F7A8CB 100%);
+  display: flex; flex-direction: column; align-items: center; overflow-x: clip;
 }
 .pk-room button:focus-visible, .pk-room a:focus-visible { outline: 3px dashed #E0245E; outline-offset: 3px; }
 
 .pk-gb {
   position: relative; width: 100%; max-width: 358px; box-sizing: border-box; padding: 16px 18px 0;
-  /* 816px on a tall phone, shrinking a little on shorter ones. */
-  height: min(816px, max(700px, calc(100svh - 28px)));
+  /* 816px on a tall phone; on shorter ones it shrinks to fit the visible screen. */
+  height: min(816px, max(600px, calc(100svh - 28px)));
   flex: none;
   border-radius: 20px 20px 72px 20px;
   background:
@@ -45,6 +49,12 @@
   padding: 6px 10px; font-family: 'Silkscreen', monospace; font-size: 11px; letter-spacing: 1px;
   border-bottom: 2px solid #9C98EE; text-shadow: 0 0 5px rgba(190,190,255,.7);
 }
+.pk-status { display: inline-flex; align-items: center; gap: 10px; }
+.pk-skip {
+  color: #FF8FC7; text-decoration: none; border: 2px solid #FF8FC7; padding: 3px 6px; margin: -5px 0;
+  text-shadow: none;
+}
+.pk-skip:hover { color: #ECEBFF; border-color: #ECEBFF; }
 .pk-strip { height: 8px; flex: none; }
 .pk-leo { background-color: #D9A962; background-image: url('./assets/leopard.jpg'); background-size: 120px 120px; background-repeat: repeat; }
 .pk-plaid {
@@ -212,6 +222,18 @@ span.pk-ssb { cursor: default; }
   font-weight: 700; font-size: 15px; padding: 4px 8px; border: 3px solid #15143F; background: #FF8FC7; box-shadow: 3px 3px 0 #15143F;
 }
 .stk.pk-stk { padding: 8px 12px; border-width: 4px; box-shadow: 0 0 0 2px #15143F, 4px 6px 0 2px rgba(21,20,63,.28); }
+
+/* Shorter phones (e.g. Safari with its toolbars showing): drop Select/Start so the
+   handheld fits on screen without being cut off. */
+@media (max-height: 760px) {
+  .pk-ss { display: none; }
+  .pk-controls { padding-top: 14px; }
+  .pk-spk { bottom: 18px; }
+}
+.pk-short-only { display: none; }
+@media (max-height: 760px) {
+  .pk-short-only { display: inline-flex; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .pk-room .blinky { animation: none; }

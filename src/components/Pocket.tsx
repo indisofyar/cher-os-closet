@@ -19,7 +19,7 @@ type Controls = {
 type Props = {
   title: string;
   /** Right side of the screen header (a tag or the time). */
-  status: string;
+  status: ReactNode;
   controls?: Controls;
   /** Elements positioned on the handheld body (stickers). */
   overlay?: ReactNode;
@@ -70,7 +70,7 @@ export function Pocket({ title, status, controls = {}, overlay, footer, children
           <div className="pk-screen">
             <header className="pk-top">
               <span>{title}</span>
-              <span>{status}</span>
+              <span className="pk-status">{status}</span>
             </header>
             <div className={`pk-strip pk-${DISPLAY.print === 'leopard' ? 'leo' : DISPLAY.print === 'plaid' ? 'plaid' : 'lav'}`} aria-hidden="true" />
             {children}

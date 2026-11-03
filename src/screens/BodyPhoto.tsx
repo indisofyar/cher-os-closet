@@ -225,7 +225,15 @@ export function BodyPhoto() {
     return (
       <Pocket
         title="SETUP · STEP 1"
-        status={done ? 'SAVED' : 'NEW USER'}
+        status={
+          <>
+            {done ? 'SAVED' : 'NEW USER'}
+            {/* Start is hidden on short phones, so skipping lives here instead. */}
+            <Link className="pk-skip pk-short-only" to="/wardrobe">
+              SKIP ›
+            </Link>
+          </>
+        }
         controls={{ b: left, a: right, start: { label: 'Start: skip for now', to: '/wardrobe' } }}
       >
         <main className="pk-photo">
