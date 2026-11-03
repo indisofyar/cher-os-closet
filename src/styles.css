@@ -206,7 +206,7 @@ a:hover { color: #15143F; }
 .dot { width: 10px; height: 10px; border-radius: 50%; background: #E0245E; }
 .count {
   position: absolute; z-index: 3; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 120px; color: #ECEBFF;
+  font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 88px; color: #ECEBFF;
   text-shadow: 0 0 18px rgba(255,143,199,.9), 6px 6px 0 #E0245E;
 }
 .got-it {

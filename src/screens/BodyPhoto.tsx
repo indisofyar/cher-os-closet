@@ -4,7 +4,10 @@ import { Monitor } from '../components/Monitor';
 import { DISPLAY, printClass } from '../config';
 import { useAppState } from '../state/AppState';
 
-type Phase = 'idle' | 'starting' | 'count' | 'done';
+type Phase = 'idle' | 'count' | 'done';
+
+/** Seconds on the self-timer before the photo is taken. */
+const COUNTDOWN = 10;
 
 const TIPS = [
   'Head to toe in frame. Feet too.',
@@ -34,20 +37,69 @@ export function BodyPhoto() {
   const { bodyPhoto, setBodyPhoto } = useAppState();
   const navigate = useNavigate();
   const [phase, setPhase] = useState<Phase>(bodyPhoto ? 'done' : 'idle');
-  const [count, setCount] = useState(3);
+  const [count, setCount] = useState(COUNTDOWN);
   const [error, setError] = useState<string | null>(null);
-  const [live, setLive] = useState(false);
+  const [cam, setCam] = useState<'off' | 'starting' | 'on'>('off');
+  const live = cam === 'on';
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<number | undefined>(undefined);
+  // Bumped whenever a pending camera request should be discarded.
+  const requestRef = useRef(0);
 
   const stopCamera = useCallback(() => {
+    requestRef.current += 1;
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
-    setLive(false);
+    setCam('off');
   }, []);
+
+  /** Turns the camera on. Resolves true once the preview is live. */
+  const startCamera = useCallback(async () => {
+    if (streamRef.current) return true;
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setError('NO CAMERA HERE. UPLOAD A PHOTO INSTEAD.');
+      return false;
+    }
+    const req = ++requestRef.current;
+    setCam('starting');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 1280 } },
+        audio: false,
+      });
+      if (req !== requestRef.current) {
+        stream.getTracks().forEach((t) => t.stop());
+        return false;
+      }
+      streamRef.current = stream;
+      setError(null);
+      setCam('on');
+      return true;
+    } catch {
+      if (req === requestRef.current) {
+        setCam('off');
+        setError('CAMERA BLOCKED. ALLOW IT, OR UPLOAD A PHOTO.');
+      }
+      return false;
+    }
+  }, []);
+
+  // Attach the stream once the <video> element has mounted.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (live && v && streamRef.current) {
+      v.srcObject = streamRef.current;
+      void v.play().catch(() => {});
+    }
+  }, [live]);
+
+  // Turn the camera on as soon as the screen opens (and again after Retake).
+  useEffect(() => {
+    if (phase === 'idle') void startCamera();
+  }, [phase, startCamera]);
 
   useEffect(
     () => () => {
@@ -66,9 +118,9 @@ export function BodyPhoto() {
 
   const startCountdown = useCallback(() => {
     clearInterval(timerRef.current);
-    setCount(3);
+    setCount(COUNTDOWN);
     setPhase('count');
-    let n = 3;
+    let n = COUNTDOWN;
     timerRef.current = window.setInterval(() => {
       n -= 1;
       if (n <= 0) {
@@ -77,37 +129,13 @@ export function BodyPhoto() {
       } else {
         setCount(n);
       }
-    }, 800);
+    }, 1000);
   }, [capture]);
 
   const snap = useCallback(async () => {
     setError(null);
-    if (streamRef.current) return startCountdown();
-    if (!navigator.mediaDevices?.getUserMedia) {
-      setError('NO CAMERA HERE. UPLOAD A PHOTO INSTEAD.');
-      return;
-    }
-    setPhase('starting');
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 1280 } },
-        audio: false,
-      });
-      streamRef.current = stream;
-      setLive(true);
-      // Wait a tick for the <video> to mount, then attach the stream.
-      requestAnimationFrame(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          void videoRef.current.play();
-        }
-        startCountdown();
-      });
-    } catch {
-      setPhase('idle');
-      setError('CAMERA BLOCKED. ALLOW IT, OR UPLOAD A PHOTO.');
-    }
-  }, [startCountdown]);
+    if (await startCamera()) startCountdown();
+  }, [startCamera, startCountdown]);
 
   const onFile = (file: File | undefined) => {
     if (!file) return;
@@ -138,13 +166,15 @@ export function BodyPhoto() {
 
   const status = error
     ? error
-    : phase === 'starting'
+    : cam === 'starting'
       ? 'WARMING UP THE CAMERA...'
       : counting
         ? 'HOLD STILL...'
         : done
           ? 'TAKE ANOTHER OR PRESS LET’S GO.'
-          : 'LINE YOURSELF UP WITH THE OUTLINE.';
+          : live
+            ? 'LINE YOURSELF UP, THEN PRESS TAKE PHOTO.'
+            : 'LINE YOURSELF UP WITH THE OUTLINE.';
 
   return (
     <Monitor
@@ -231,7 +261,7 @@ export function BodyPhoto() {
             Go
           </button>
         ) : (
-          <button className="big hot" onClick={snap} disabled={phase === 'starting' || counting}>
+          <button className="big hot" onClick={snap} disabled={cam === 'starting' || counting}>
             Take
             <br />
             Photo
