@@ -273,11 +273,17 @@ a:hover { color: #15143F; }
 }
 .polaroid img { display: block; width: 100%; aspect-ratio: 3/4; object-fit: cover; }
 /* AI try-on: the generated photo, the "dressing you" wait and errors. */
-.stage-photo { display: block; height: 94%; max-width: 100%; width: auto; object-fit: contain; }
+.stage-photo { display: block; height: 100%; max-width: 100%; width: auto; object-fit: contain; }
 .stage-photo.fresh { animation: tuneIn .6s steps(6) both; }
 /* The generated photo has a white background (like the panel in the film), so match it. */
-.stage:has(.stage-photo.fresh), .pk-stage:has(.stage-photo.fresh) { background: #FFFFFF; }
-.stage-label, .stage-pos { z-index: 2; }
+/* Feather the photo's edges into the stage, which is painted with the photo's own background colour. */
+.stage-photo.fresh {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent), linear-gradient(180deg, transparent, #000 5%, #000 95%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent), linear-gradient(180deg, transparent, #000 5%, #000 95%, transparent);
+  mask-composite: intersect;
+}
+.stage { transition: background-color .3s; }
 @keyframes tuneIn {
   0% { opacity: 0; filter: brightness(2.4) contrast(.4); transform: scaleY(.02) }
   40% { opacity: 1; transform: scaleY(1) }

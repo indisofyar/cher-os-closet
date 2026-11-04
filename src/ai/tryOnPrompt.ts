@@ -45,13 +45,21 @@ export function buildTryOnPrompt({ gender, top, bottom }: TryOnOutfit): string |
   const clothes = [DESCRIBE[t.name], DESCRIBE[b.name], DESCRIBE[shoes.name]].filter(Boolean).join(', ');
 
   return [
-    'Edit this photo of a person so they are wearing a new outfit.',
-    'Keep the same person: identical face, hair, skin tone, body shape and proportions. Do not change who they are.',
+    'Edit this photo of a person so they are wearing a new outfit, and restyle the whole picture as a digitised photo inside a mid-1990s home-computer wardrobe program.',
+    // Identity
+    'Keep the same person: identical face, hair, skin tone, body shape and proportions. Do not change who they are or make them look like anyone else.',
+    // Clothes
     `Outfit: ${clothes}. Remove the clothes they are currently wearing and replace them with this outfit only.`,
-    'Show the whole body, head to toe with feet visible, standing straight and facing the camera with arms relaxed slightly away from the body, centred in a tall portrait frame.',
-    'Plain, flat white background with no props, scenery or shadows behind them.',
-    'Style: a mid-1990s home-computer fashion program. The person looks like a photographed cut-out of a catalogue model, captured from a VHS tape shown on a CRT monitor:',
-    'flat even studio lighting, slightly washed-out warm colours, soft focus, faint video grain and gentle scan lines.',
-    'No text, no logos, no borders, no user interface.',
+    // Pose and framing, like a paper doll in a dress-up program
+    'Pose them like a paper doll in a dress-up game: standing straight and facing the camera, feet together with toes slightly turned out, arms held a little away from the body with relaxed open hands, a slight smile.',
+    'Full body, head to toe, nothing cropped. The figure is centred and fills almost the full height of a tall portrait frame, with only a small margin above the head and below the feet.',
+    // Backdrop: must be flat so it blends into the app's white panel
+    'Background: one flat, even, pure bright white (#FFFFFF) from edge to edge, like a cut-out pasted on a white page. No floor, no horizon line, no gradient, no vignette, no shadow on the background, no props.',
+    // The film look
+    'Image style: a 1995 low-resolution digitised photograph, as if captured with an early video capture card and filmed off a CRT monitor.',
+    'Soft and slightly blurry with low detail, gentle VHS colour bleed and chroma smear around edges, faint interlaced scan lines, mild glow on highlights.',
+    'Bright, flat, over-lit studio lighting with no hard shadows; warm, saturated colours (golden yellows, rosy skin); slightly lifted blacks.',
+    'It should look like a mid-90s teen-movie wardrobe computer screen, not a modern photograph: no sharp detail, no HDR, no depth-of-field blur.',
+    'No text, no logos, no borders, no frames, no user interface elements.',
   ].join(' ');
 }

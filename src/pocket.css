@@ -217,7 +217,7 @@ span.pk-ssb { cursor: default; }
   border: 2px solid #15143F; transform: rotate(-4deg);
 }
 .pk-polaroid img { display: block; width: 100%; aspect-ratio: 3/4; object-fit: cover; }
-.pk-stage .stage-photo { height: 92%; }
+.pk-stage .stage-photo { height: 100%; }
 .pk-stage .dressing-text { font-size: 12px; letter-spacing: 1px; padding: 4px 7px; box-shadow: 3px 3px 0 #FF8FC7; }
 .pk-stage-label, .pk-stage-pos { z-index: 2; }
 .pk-stage .stage-msg { max-width: 72%; padding: 10px 12px; gap: 8px; box-shadow: 3px 3px 0 #15143F; border-width: 2px; }
