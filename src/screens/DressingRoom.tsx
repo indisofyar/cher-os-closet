@@ -6,6 +6,7 @@ import { useIsPocket } from '../hooks/useIsPocket';
 import { DISPLAY, printClass } from '../config';
 import { PlaidDefs } from '../components/PlaidDefs';
 import { WARDROBE, outfitCheck, pickShoes, type Gender, type Garment } from '../data/garments';
+import type { TryOnRouteState } from '../ai/useTryOn';
 
 function GarmentSvg({ item, style, className }: { item: Garment; style?: React.CSSProperties; className?: string }) {
   return (
@@ -66,6 +67,9 @@ export function DressingRoom() {
   const bottom = bottoms[bi];
   const shoes = pickShoes(gender, top, bottom);
   const check = outfitCheck(gender, top, bottom);
+  /** Opens the try-on screen, which generates the photo of the user in this outfit. */
+  const tryOnYou = () =>
+    navigate('/try-on', { state: { outfit: { gender, top: top.name, bottom: bottom.name } } satisfies TryOnRouteState });
 
   const switchGender = (g: Gender) => {
     setGender(g);
@@ -101,7 +105,7 @@ export function DressingRoom() {
           right: { label: 'Right: next item', onClick: cycle(current.set, current.len, 1) },
           b: { label: 'B: back', onClick: () => setFull(false) },
           a: full
-            ? { label: 'A: try it on on you', onClick: () => navigate('/try-on') }
+            ? { label: 'A: try it on on you', onClick: tryOnYou }
             : { label: 'A: try it on', onClick: () => setFull(true) },
           select: { label: 'Select: switch women’s and men’s', onClick: () => switchGender(gender === 'm' ? 'w' : 'm') },
           start: { label: 'Start: auto style', onClick: autoStyle },
@@ -117,9 +121,9 @@ export function DressingRoom() {
               </Link>
             </div>
             {full ? (
-              <Link className="pk-sb hot" to="/try-on">
+              <button className="pk-sb hot" onClick={tryOnYou}>
                 On you
-              </Link>
+              </button>
             ) : (
               <button className="pk-sb hot" onClick={() => setFull(true)}>
                 Try it on
@@ -285,11 +289,11 @@ export function DressingRoom() {
             <button className="big small" onClick={() => setFull(false)}>
               Back
             </button>
-            <Link className="big hot try-on-you" to="/try-on">
+            <button className="big hot try-on-you" onClick={tryOnYou}>
               Try it on
               <br />
               on you
-            </Link>
+            </button>
           </>
         ) : (
           <button className="big" onClick={() => setFull(true)}>

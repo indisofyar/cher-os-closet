@@ -217,6 +217,14 @@ span.pk-ssb { cursor: default; }
   border: 2px solid #15143F; transform: rotate(-4deg);
 }
 .pk-polaroid img { display: block; width: 100%; aspect-ratio: 3/4; object-fit: cover; }
+.pk-stage .stage-photo { height: 92%; }
+.pk-stage .dressing-text { font-size: 12px; letter-spacing: 1px; padding: 4px 7px; box-shadow: 3px 3px 0 #FF8FC7; }
+.pk-stage-label, .pk-stage-pos { z-index: 2; }
+.pk-stage .stage-msg { max-width: 72%; padding: 10px 12px; gap: 8px; box-shadow: 3px 3px 0 #15143F; border-width: 2px; }
+.pk-stage .stage-msg p { font-size: 16px; }
+.pk-stage .stage-msg-head { font-size: 15px; }
+.pk-stage .stage-msg-btn { min-height: 36px; font-size: 13px; }
+.pk-sb:disabled { filter: saturate(.25); opacity: .75; }
 .pk-saved {
   position: absolute; right: 52px; bottom: 8px; transform: rotate(-6deg); font-family: 'Silkscreen', monospace;
   font-weight: 700; font-size: 15px; padding: 4px 8px; border: 3px solid #15143F; background: #FF8FC7; box-shadow: 3px 3px 0 #15143F;

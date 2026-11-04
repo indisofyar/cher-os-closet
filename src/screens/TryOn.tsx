@@ -1,11 +1,13 @@
-import { useState, type CSSProperties } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState, type CSSProperties } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Monitor } from '../components/Monitor';
 import { Pocket } from '../components/Pocket';
 import { useIsPocket } from '../hooks/useIsPocket';
 import { PlaidDefs } from '../components/PlaidDefs';
 import { DISPLAY, printClass } from '../config';
-import { LOOKS, VERDICT_STYLE } from '../data/garments';
+import { LOOKS, VERDICT_STYLE, WARDROBE, outfitCheck } from '../data/garments';
+import type { TryOnOutfit } from '../ai/tryOnPrompt';
+import { readOutfit, useTryOn, type TryOnState } from '../ai/useTryOn';
 import { useAppState } from '../state/AppState';
 
 const v = (r: string, d: string) => ({ '--r': r, '--d': d }) as CSSProperties;
@@ -57,8 +59,7 @@ function PocketStickers() {
 }
 
 /** The body figure wearing a look, with the shimmer and sparkles. */
-function Figure({ lookIndex, className, stroke }: { lookIndex: number; className: string; stroke: number }) {
-  const look = LOOKS[lookIndex];
+function Figure({ look, className, stroke }: { look: (typeof LOOKS)[number]; className: string; stroke: number }) {
   const clipId = `outfitClip-${className}`;
   return (
     <svg className={className} role="img" aria-label={`You wearing ${look.name}`} viewBox="0 0 120 240">
@@ -95,32 +96,125 @@ function Figure({ lookIndex, className, stroke }: { lookIndex: number; className
   );
 }
 
+/** One entry in the try-on carousel: the user's own outfit (AI photo) or a preset look (SVG figure). */
+type Slide = {
+  id: string;
+  name: string;
+  verdict: keyof typeof VERDICT_STYLE;
+  line: string;
+  short: string;
+  look: (typeof LOOKS)[number] | null;
+};
+
+function outfitSlide(o: TryOnOutfit): Slide | null {
+  const w = WARDROBE[o.gender];
+  const top = w.tops.find((g) => g.name === o.top);
+  const bottom = w.bottoms.find((g) => g.name === o.bottom);
+  if (!top || !bottom) return null;
+  const check = outfitCheck(o.gender, top, bottom);
+  return {
+    id: `outfit:${o.gender}:${o.top}+${o.bottom}`,
+    name: `${o.top} + ${o.bottom}`,
+    verdict: check.label,
+    line: check.line,
+    short: check.short,
+    look: null,
+  };
+}
+
+/** What the stage shows for the user's own outfit while it's being generated, once it's back, or when it fails. */
+function AiStage({ state, bodyPhoto, retry, pocket }: { state: TryOnState; bodyPhoto: string | null; retry: () => void; pocket: boolean }) {
+  if (!bodyPhoto) {
+    return (
+      <div className="stage-msg">
+        <p>No body photo yet. Take one and I’ll dress you.</p>
+        <Link className="tr stage-msg-btn" to="/setup">
+          Take my photo
+        </Link>
+      </div>
+    );
+  }
+  if (state.status === 'done') {
+    return <img className={`stage-photo fresh${pocket ? ' pk' : ''}`} src={state.image} alt="You wearing this outfit" />;
+  }
+  if (state.status === 'error') {
+    return (
+      <div className="stage-msg" role="alert">
+        <span className="stage-msg-head">AS IF!</span>
+        <p>{state.message}</p>
+        <button className="tr stage-msg-btn" onClick={retry}>
+          Try again
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="dressing" role="status">
+      <img className="stage-photo pending" src={bodyPhoto} alt="" />
+      <div className="scanbar" aria-hidden="true" />
+      <span className="dressing-text blinky">DRESSING YOU…</span>
+    </div>
+  );
+}
+
 export function TryOn() {
   const pocket = useIsPocket();
+  const location = useLocation();
   const { bodyPhoto, isSaved, toggleSaved, savedOutfits } = useAppState();
+
+  // The outfit picked in the dressing room ("Try it on on you") comes first, followed by the preset looks.
+  const outfit = readOutfit(location.state);
+  const mine = outfit ? outfitSlide(outfit) : null;
+  const slides: Slide[] = [...(mine ? [mine] : []), ...LOOKS.map((l) => ({ ...l, look: l }))];
+
   const [i, setI] = useState(0);
   // Bumped on each outfit change so the sticker/sparkle animations replay.
   const [replay, setReplay] = useState(0);
+  const { state: ai, retry } = useTryOn(bodyPhoto, mine ? outfit : null);
 
-  const look = LOOKS[i];
-  const style = VERDICT_STYLE[look.verdict];
-  const saved = isSaved(look.id);
+  const slide = slides[i] ?? slides[0];
+  const onMine = slide.look === null;
+  const aiReady = ai.status === 'done';
+  const style = VERDICT_STYLE[slide.verdict];
+  const saved = isSaved(slide.id);
+  // Stickers celebrate a finished look, so hold them back until the AI photo arrives.
+  const showStickers = !onMine || aiReady;
+  const canWear = !onMine || aiReady;
+
+  // Replay the stickers when the generated photo lands.
+  useEffect(() => {
+    if (aiReady) setReplay((r) => r + 1);
+  }, [aiReady]);
 
   const go = (n: number) => {
-    setI((n + LOOKS.length) % LOOKS.length);
+    setI((n + slides.length) % slides.length);
     setReplay((r) => r + 1);
   };
-  const auto = () => go(i + 1 + Math.floor(Math.random() * (LOOKS.length - 1)));
+  const auto = () => go(i + 1 + Math.floor(Math.random() * (slides.length - 1)));
+  const wearIt = () => canWear && toggleSaved(slide.id, slide.name);
+
+  const label = onMine
+    ? ai.status === 'done'
+      ? 'YOU · IN THIS OUTFIT'
+      : ai.status === 'error'
+        ? 'YOU · TRY AGAIN'
+        : bodyPhoto
+          ? 'YOU · DRESSING…'
+          : 'YOU · NO PHOTO YET'
+    : bodyPhoto
+      ? 'YOU · FROM YOUR PHOTO'
+      : 'YOU · NO PHOTO YET';
+  const status = saved ? 'SAVED' : onMine && ai.status === 'loading' ? 'DRESSING…' : 'ON YOU';
 
   const side = `side ${printClass(DISPLAY.print)}`;
 
   if (pocket) {
-    const wear = { label: saved ? 'A: unsave outfit' : 'A: wear it', onClick: () => toggleSaved(look.id, look.name) };
+    const wear = { label: saved ? 'A: unsave outfit' : 'A: wear it', onClick: wearIt };
     return (
       <Pocket
         title="WARDROBE"
-        status={saved ? 'SAVED' : 'ON YOU'}
-        overlay={<PocketStickers key={replay} />}
+        status={status}
+        overlay={showStickers ? <PocketStickers key={replay} /> : undefined}
         controls={{
           left: { label: 'Left: previous outfit', onClick: () => go(i - 1) },
           right: { label: 'Right: next outfit', onClick: () => go(i + 1) },
@@ -138,7 +232,7 @@ export function TryOn() {
                 WARDROBE
               </Link>
             </div>
-            <button className="pk-sb hot" onClick={wear.onClick} aria-pressed={saved}>
+            <button className="pk-sb hot" onClick={wear.onClick} aria-pressed={saved} disabled={!canWear}>
               {saved ? 'Saved' : 'Wear it'}
             </button>
           </div>
@@ -147,9 +241,9 @@ export function TryOn() {
         <PlaidDefs id="plaidT" size={10} />
         <main className="pk-panel tryon">
           <div className="pk-stage">
-            <span className="pk-stage-label">{bodyPhoto ? 'YOU · FROM YOUR PHOTO' : 'YOU · NO PHOTO YET'}</span>
+            <span className="pk-stage-label">{label}</span>
             <span className="pk-stage-pos">
-              {i + 1}/{LOOKS.length}
+              {i + 1}/{slides.length}
             </span>
             <button className="pk-sb pk-arrow" style={{ left: 4 }} aria-label="Previous outfit" onClick={() => go(i - 1)}>
               <svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true">
@@ -161,8 +255,12 @@ export function TryOn() {
                 <path d="M12 7 L0 0 L0 14 Z" fill="#1E1C7A" />
               </svg>
             </button>
-            <Figure key={replay} lookIndex={i} className="pk-figure" stroke={1.8} />
-            {bodyPhoto && (
+            {slide.look ? (
+              <Figure key={replay} look={slide.look} className="pk-figure" stroke={1.8} />
+            ) : (
+              <AiStage state={ai} bodyPhoto={bodyPhoto} retry={retry} pocket />
+            )}
+            {bodyPhoto && (!onMine || aiReady) && (
               <figure className="pk-polaroid">
                 <img src={bodyPhoto} alt="Your body photo" />
               </figure>
@@ -171,9 +269,9 @@ export function TryOn() {
           </div>
           <div className="pk-verdict-row" aria-live="polite">
             <span className="pk-verdict" style={{ background: style.bg, color: style.fg, fontSize: 14 }}>
-              {look.verdict}
+              {slide.verdict}
             </span>
-            <p className="pk-verdict-line">{look.short}</p>
+            <p className="pk-verdict-line">{slide.short}</p>
           </div>
         </main>
       </Pocket>
@@ -183,8 +281,8 @@ export function TryOn() {
   return (
     <Monitor
       title="CherOS · WARDROBE"
-      tag={saved ? 'OUTFIT SAVED' : 'ON YOU'}
-      overlay={<Stickers key={replay} />}
+      tag={saved ? 'OUTFIT SAVED' : status}
+      overlay={showStickers ? <Stickers key={replay} /> : undefined}
       footer={
         <nav className="cats" aria-label="Navigation">
           <Link to="/wardrobe">WARDROBE</Link>
@@ -210,12 +308,16 @@ export function TryOn() {
 
       <main className="panel tryon">
         <div className="stage">
-          <span className="stage-label">{bodyPhoto ? 'YOU · FROM YOUR BODY PHOTO' : 'YOU · NO BODY PHOTO YET'}</span>
+          <span className="stage-label">{label}</span>
           <span className="stage-pos">
-            {i + 1}/{LOOKS.length}
+            {i + 1}/{slides.length}
           </span>
-          <Figure key={replay} lookIndex={i} className="stage-figure" stroke={1.6} />
-          {bodyPhoto && (
+          {slide.look ? (
+            <Figure key={replay} look={slide.look} className="stage-figure" stroke={1.6} />
+          ) : (
+            <AiStage state={ai} bodyPhoto={bodyPhoto} retry={retry} pocket={false} />
+          )}
+          {bodyPhoto && (!onMine || aiReady) && (
             <figure className="polaroid" style={{ margin: 0 }}>
               <img src={bodyPhoto} alt="Your body photo" />
             </figure>
@@ -236,16 +338,16 @@ export function TryOn() {
         </div>
         <div className="verdict-row" aria-live="polite">
           <span className="verdict" style={{ background: style.bg, color: style.fg }}>
-            {look.verdict}
+            {slide.verdict}
           </span>
           <p className="verdict-line">
-            <span style={{ fontFamily: "'Silkscreen', monospace", fontSize: 15 }}>{look.name.toUpperCase()}:</span> {look.line}
+            <span style={{ fontFamily: "'Silkscreen', monospace", fontSize: 15 }}>{slide.name.toUpperCase()}:</span> {slide.line}
           </p>
         </div>
       </main>
 
       <div className={side}>
-        <button className="big hot" onClick={() => toggleSaved(look.id, look.name)} aria-pressed={saved}>
+        <button className="big hot" onClick={wearIt} aria-pressed={saved} disabled={!canWear}>
           {saved ? (
             'Saved'
           ) : (

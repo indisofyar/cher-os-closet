@@ -7,7 +7,7 @@ A virtual closet manager in a retro CRT-monitor look. This first web build cover
 | `#/` | Welcome / main menu | Intro copy, "I'm clueless" goes to setup |
 | `#/setup` | Body photo | Upload a photo, or take one with the webcam (3-2-1 countdown). Saved in the browser. |
 | `#/wardrobe` | Dressing room | Women's/men's wardrobe, cycle tops and bottoms, Try It On shows an outfit check (TOTALLY / HMMM / AS IF!), Auto Style |
-| `#/try-on` | Outfit on you | Cycle styled looks on the body figure with sticker animations; Wear It saves a look |
+| `#/try-on` | Outfit on you | Opened from "Try it on on you": generates a photo of you in that outfit (Gemini), then cycles the preset looks; Wear It saves a look |
 
 ## Run it
 

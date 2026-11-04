@@ -272,6 +272,41 @@ a:hover { color: #15143F; }
   border: 2px solid #15143F; transform: rotate(-4deg); box-shadow: 3px 3px 0 #15143F;
 }
 .polaroid img { display: block; width: 100%; aspect-ratio: 3/4; object-fit: cover; }
+/* AI try-on: the generated photo, the "dressing you" wait and errors. */
+.stage-photo { display: block; height: 94%; max-width: 100%; width: auto; object-fit: contain; }
+.stage-photo.fresh { animation: tuneIn .6s steps(6) both; }
+/* The generated photo has a white background (like the panel in the film), so match it. */
+.stage:has(.stage-photo.fresh), .pk-stage:has(.stage-photo.fresh) { background: #FFFFFF; }
+.stage-label, .stage-pos { z-index: 2; }
+@keyframes tuneIn {
+  0% { opacity: 0; filter: brightness(2.4) contrast(.4); transform: scaleY(.02) }
+  40% { opacity: 1; transform: scaleY(1) }
+  100% { filter: none; transform: none }
+}
+.dressing { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.stage-photo.pending { opacity: .5; filter: grayscale(.6) blur(1px); }
+.scanbar {
+  position: absolute; left: 0; right: 0; height: 18%; top: -18%;
+  background: linear-gradient(180deg, transparent, rgba(255,143,199,.55) 80%, #FF8FC7);
+  animation: scan 1.6s linear infinite;
+}
+@keyframes scan { to { top: 100% } }
+.dressing-text {
+  position: absolute; font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 26px; letter-spacing: 2px;
+  background: #15143F; color: #FFFFFF; padding: 8px 14px; box-shadow: 4px 4px 0 #FF8FC7;
+}
+.stage-msg {
+  display: flex; flex-direction: column; align-items: center; gap: 12px; max-width: 300px; text-align: center;
+  background: #FFFFFF; border: 3px solid #15143F; box-shadow: 4px 4px 0 #15143F; padding: 16px 18px;
+}
+.stage-msg p { margin: 0; font-size: 22px; line-height: 1.1; }
+.stage-msg-head { font-family: 'Silkscreen', monospace; font-weight: 700; font-size: 22px; background: #E0245E; color: #FFFFFF; padding: 4px 10px; transform: rotate(-3deg); }
+.stage-msg-btn { flex: none; padding: 0 16px; text-decoration: none; }
+.big:disabled { filter: saturate(.25); opacity: .75; cursor: progress; }
+@media (prefers-reduced-motion: reduce) {
+  .scanbar, .stage-photo.fresh { animation: none; }
+  .scanbar { display: none; }
+}
 .saved-stamp {
   position: absolute; right: 18px; bottom: 18px; transform: rotate(-6deg); font-family: 'Silkscreen', monospace;
   font-weight: 700; font-size: 24px; padding: 6px 12px; border: 4px solid #15143F; background: #FF8FC7; box-shadow: 4px 4px 0 #15143F;
