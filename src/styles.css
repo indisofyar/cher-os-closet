@@ -73,6 +73,14 @@ a:hover { color: #15143F; }
   background: linear-gradient(180deg, var(--shell-hi), var(--shell-lo));
   box-shadow: inset 0 2px 0 rgba(255,255,255,.7), 0 16px 30px rgba(0,0,0,.5);
 }
+/* Desktop: size the monitor off the viewport height so the stand's foot rests on
+   the bottom of the page. The screen is 4:3 of the bezel's inner width (monitor
+   width minus 136px of shell + bezel padding); everything else stacked around it
+   (room top padding, shell, bezel, chin, neck, foot) is a fixed ~278px. */
+@media (min-width: 900px) and (min-height: 560px) {
+  .room { padding-bottom: 0; justify-content: flex-end; }
+  .monitor { max-width: none; width: min(100%, calc((100dvh - 278px) * 4 / 3 + 136px)); }
+}
 .shell-white  { --shell: #E9EDF1; --shell-hi: #FFFFFF; --shell-lo: #AEB6BF; }
 .shell-aqua   { --shell: #22A9B8; --shell-hi: #A8EEF3; --shell-lo: #0E6E7A; }
 .shell-lilac  { --shell: #8E7BD6; --shell-hi: #DCD3FF; --shell-lo: #5A48A8; }
