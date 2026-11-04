@@ -2,6 +2,7 @@ import { useEffect, useState, type CSSProperties, type SyntheticEvent } from 're
 import { Link, useLocation } from 'react-router-dom';
 import { Monitor } from '../components/Monitor';
 import { Pocket } from '../components/Pocket';
+import { MonitorNav, PocketNavLinks } from '../components/NavBar';
 import { useIsPocket } from '../hooks/useIsPocket';
 import { DISPLAY, printClass } from '../config';
 import { WARDROBE } from '../data/garments';
@@ -228,14 +229,7 @@ export function TryOn() {
         }}
         footer={
           <div className="pk-bar">
-            <div className="pk-bar-links">
-              <Link className="pk-menu" to="/">
-                MENU
-              </Link>
-              <Link className="pk-menu" to="/wardrobe">
-                WARDROBE
-              </Link>
-            </div>
+            <PocketNavLinks current="/try-on" />
             <button className="pk-sb hot" onClick={save} disabled={!ready}>
               {saved ? 'Saved' : 'Save'}
             </button>
@@ -258,16 +252,7 @@ export function TryOn() {
       tag={status}
       overlay={ready ? <Stickers key={replay} /> : undefined}
       footer={
-        <nav className="cats" aria-label="Navigation">
-          <Link to="/wardrobe">WARDROBE</Link>
-          <Link to="/try-on" className="on" aria-current="page">
-            ON YOU
-          </Link>
-          <span className="spacer" />
-          <Link to="/" className="more">
-            MENU
-          </Link>
-        </nav>
+        <MonitorNav current="/try-on" />
       }
     >
       <div className={side} />

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { MonitorNav, PocketNavLinks } from '../components/NavBar';
 import { Monitor } from '../components/Monitor';
 import { Pocket } from '../components/Pocket';
 import { useIsPocket } from '../hooks/useIsPocket';
@@ -112,14 +113,7 @@ export function DressingRoom() {
         }}
         footer={
           <div className="pk-bar">
-            <div className="pk-bar-links">
-              <Link className="pk-menu" to="/">
-                MENU
-              </Link>
-              <Link className="pk-menu" to="/try-on">
-                ON YOU
-              </Link>
-            </div>
+            <PocketNavLinks current="/wardrobe" />
             {full ? (
               <button className="pk-sb hot" onClick={tryOnYou}>
                 On you
@@ -195,16 +189,7 @@ export function DressingRoom() {
       title="CherOS · WARDROBE"
       tag={full ? 'OUTFIT CHECK' : 'AUTUMN EDIT'}
       footer={
-        <nav className="cats" aria-label="Navigation">
-          <Link to="/wardrobe" className="on" aria-current="page">
-            WARDROBE
-          </Link>
-          <Link to="/try-on">ON YOU</Link>
-          <span className="spacer" />
-          <Link to="/" className="more">
-            MENU
-          </Link>
-        </nav>
+        <MonitorNav current="/wardrobe" />
       }
     >
       <PlaidDefs id="plaidY" size={18} />

@@ -75,10 +75,14 @@
 .pk-sb:disabled { opacity: .65; cursor: progress; }
 
 .pk-bar {
-  background: #15143F; border-top: 2px solid #9C98EE; padding: 4px 8px; display: flex;
-  justify-content: space-between; align-items: center; gap: 8px; flex: none;
+  background: #15143F; border-top: 2px solid #9C98EE; padding: 3px 8px; display: flex; flex-wrap: wrap;
+  justify-content: space-between; align-items: center; gap: 4px 8px; flex: none;
 }
-.pk-bar-links { display: flex; gap: 6px; }
+/* Three links plus a screen's action button don't fit one row: the links take
+   the first row and the action button drops to a full-width second row. */
+.pk-bar-links { display: flex; gap: 6px; flex: 1 0 100%; }
+.pk-bar-links .pk-menu { flex: 1 1 auto; justify-content: center; }
+.pk-bar > .pk-sb { flex: 1 0 100%; }
 .pk-menu {
   font-family: 'Silkscreen', monospace; font-size: 12px; letter-spacing: 1px; color: #ECEBFF; text-decoration: none;
   border: 2px solid #ECEBFF; padding: 0 8px; min-height: 44px; display: inline-flex; align-items: center; box-sizing: border-box;
@@ -246,3 +250,20 @@ span.pk-ssb { cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   .pk-room .blinky { animation: none; }
 }
+
+/* ---------- Stats ---------- */
+.pk-panel.stats { padding: 8px 10px; gap: 6px; overflow-y: auto; color: #15143F; }
+.pk-panel.stats .stats-kicker { font-size: 10px; letter-spacing: 1px; }
+.pk-panel.stats .stats-title { font-size: 20px; }
+.pk-panel.stats .stats-title span { text-shadow: 2px 2px 0 #15143F; }
+.rcpt.compact { padding: 8px 10px 4px; gap: 6px; box-shadow: 3px 3px 0 #E2E0EE; }
+.rcpt.compact .rcpt-head { font-size: 10px; padding-bottom: 5px; }
+.rcpt.compact .rcpt-rows { gap: 5px; }
+.rcpt.compact .rrow { gap: 6px; }
+.rcpt.compact .rcpt-ico { width: 24px; height: 24px; }
+.rcpt.compact .rcpt-ico svg { width: 16px; height: 16px; }
+.rcpt.compact .rcpt-label { font-size: 17px; }
+.rcpt.compact .rcpt-dots { min-width: 8px; transform: translateY(-3px); }
+.rcpt.compact .rrow b { font-size: 24px; }
+.rcpt.compact .rcpt-verdict { margin-top: 2px; padding: 6px 0 8px; font-size: 17px; }
+.rcpt.compact .vstk { font-size: 13px; padding: 4px 7px; border-width: 3px; margin: 2px 8px 4px 2px; }
