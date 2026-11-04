@@ -9,7 +9,7 @@ import { useAppState } from '../state/AppState';
 type Phase = 'idle' | 'count' | 'done';
 
 /** Seconds on the self-timer before the photo is taken. */
-const COUNTDOWN = 10;
+const COUNTDOWN = 5;
 
 const HEADING = 'Step 1: Upload or take a photo';
 const INTRO = 'Let’s see what we’re working with and make it TOTALLY fabulous.';
