@@ -11,19 +11,11 @@ type Phase = 'idle' | 'count' | 'done';
 /** Seconds on the self-timer before the photo is taken. */
 const COUNTDOWN = 10;
 
-const POCKET_TIPS = [
-  'Head to toe in frame. Feet too.',
-  'Stand about 2 metres back.',
-  'Plain wall, good light.',
-  'Wear something fitted.',
-];
+const HEADING = 'Step 1: Upload or take a photo';
+const INTRO = 'Let’s see what we’re working with and make it TOTALLY fabulous.';
 
-const TIPS = [
-  'Head to toe in frame. Feet too.',
-  'Stand about 2 metres back, arms slightly out.',
-  'Plain wall behind you, good light.',
-  'Wear something fitted.',
-];
+/** Shown on both layouts. We only need the top half of the body in the photo. */
+const TIPS = ['Make sure you get head in the shot', 'Smile and click. You’ve got this!'];
 
 const MAX_SIDE = 1200;
 
@@ -183,8 +175,8 @@ export function BodyPhoto() {
         : done
           ? 'TAKE ANOTHER OR PRESS LET’S GO.'
           : live
-            ? 'LINE YOURSELF UP, THEN PRESS TAKE PHOTO.'
-            : 'LINE YOURSELF UP WITH THE OUTLINE.';
+            ? 'HEAD AND SHOULDERS IN THE OUTLINE, THEN PRESS TAKE PHOTO.'
+            : 'GET YOUR HEAD AND SHOULDERS IN THE OUTLINE.';
 
   const openPicker = () => fileRef.current?.click();
   const fileInput = (
@@ -194,7 +186,7 @@ export function BodyPhoto() {
       accept="image/*"
       className="visually-hidden"
       tabIndex={-1}
-      aria-label="Upload a full-length photo"
+      aria-label="Upload a photo"
       onChange={(e) => {
         onFile(e.target.files?.[0]);
         e.target.value = '';
@@ -221,7 +213,7 @@ export function BodyPhoto() {
           ? 'Hold still...'
           : done
             ? 'Looking good!'
-            : 'Take a full-length photo';
+            : 'Upload or take a photo';
     return (
       <Pocket
         title="SETUP · STEP 1"
@@ -258,9 +250,10 @@ export function BodyPhoto() {
           <h1 className="pk-heading" aria-live="polite">
             {heading}
           </h1>
-          {POCKET_TIPS.map((t, i) => (
+          {!done && <p className="pk-intro">{INTRO}</p>}
+          {TIPS.map((t, i) => (
             <div className="pk-tip" key={t}>
-              <b>{i + 1}</b>
+              <b>TIP {i + 1}</b>
               <span>{t}</span>
             </div>
           ))}
@@ -331,15 +324,15 @@ export function BodyPhoto() {
         </div>
 
         <div className="photo-copy">
-          <h1>{done ? 'Looking good!' : 'First, a full-length photo'}</h1>
+          <h1>{done ? 'Looking good!' : HEADING}</h1>
           <p className="intro">
             {done
               ? 'Body photo saved. CherOS will use it to show outfits on you.'
-              : 'So CherOS can try clothes on you, take one photo of your whole body.'}
+              : INTRO}
           </p>
           {TIPS.map((t, i) => (
             <div className="tip" key={t}>
-              <b>{i + 1}</b>
+              <b>TIP {i + 1}</b>
               <span>{t}</span>
             </div>
           ))}
@@ -377,12 +370,12 @@ function BodyOutline({ captured, overVideo }: { captured: boolean; overVideo: bo
       className="outline"
       role="img"
       aria-label={captured ? 'Body photo captured' : 'Outline showing where to stand'}
-      viewBox="0 0 100 200"
+      viewBox="0 0 100 100"
       style={overVideo ? { opacity: 0.8 } : undefined}
     >
-      <circle cx="50" cy="16" r="11" fill={fill} stroke={stroke} strokeWidth="2" strokeDasharray={dash} />
+      <ellipse cx="50" cy="28" rx="15" ry="18" fill={fill} stroke={stroke} strokeWidth="2" strokeDasharray={dash} />
       <path
-        d="M34 32 Q50 27 66 32 L76 86 L68 88 L61 50 L62 112 L58 190 L51 190 L50 124 L49 190 L42 190 L38 112 L39 50 L32 88 L24 86 Z"
+        d="M43 46 L43 52 Q24 54 17 64 Q13 72 13 99 L87 99 Q87 72 83 64 Q76 54 57 52 L57 46"
         fill={fill}
         stroke={stroke}
         strokeWidth="2"

@@ -75,6 +75,8 @@ export function buildTryOnPrompt({ gender, top, bottom }: TryOnOutfit, pose = pi
     'Edit this photo of a person so they are wearing a new outfit, and restyle the whole picture as a digitised photo inside a mid-1990s home-computer wardrobe program.',
     // Identity
     'Keep the same person: identical face, hair, skin tone, body shape and proportions. Do not change who they are or make them look like anyone else.',
+    // Setup only asks for a head-and-shoulders / top-half photo, so the rest of the body has to be filled in.
+    'The photo may only show the top half of their body; if so, extend them into a full figure with legs and feet that match their build and proportions naturally.',
     // Clothes
     `Outfit: ${clothes}. Remove the clothes they are currently wearing and replace them with this outfit only.`,
     // Pose: varies per try-on so it feels alive, not stiff
