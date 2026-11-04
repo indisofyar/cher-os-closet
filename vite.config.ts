@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { handleTryOn } from './server/tryOn';
+import { handleTryOn } from './server/tryOn.js';
 
 /** Serves POST /api/try-on during `npm run dev`, reading GEMINI_API_KEY from .env.local. */
 function tryOnApi(env: Record<string, string>): Plugin {

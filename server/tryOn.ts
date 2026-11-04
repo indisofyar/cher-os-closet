@@ -2,8 +2,8 @@
 // Written against the Web Request/Response API so the same code runs on Vercel and in the Vite dev server.
 
 import { ApiError, GoogleGenAI } from '@google/genai';
-import { buildTryOnPrompt } from '../src/ai/tryOnPrompt';
-import type { Gender } from '../src/data/garments';
+import { buildTryOnPrompt } from '../src/ai/tryOnPrompt.js';
+import type { Gender } from '../src/data/garments.js';
 
 export const DEFAULT_MODEL = 'gemini-3.1-flash-image';
 

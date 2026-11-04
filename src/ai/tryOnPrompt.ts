@@ -1,7 +1,7 @@
 // Builds the image-generation prompt for "Try it on on you".
 // Shared by the browser and the /api/try-on server function, so it must stay free of DOM code.
 
-import { WARDROBE, pickShoes, type Gender } from '../data/garments';
+import { WARDROBE, pickShoes, type Gender } from '../data/garments.js';
 
 /** What each garment looks like, in words the image model can draw. Keyed by `Garment.name`. */
 const DESCRIBE: Record<string, string> = {
