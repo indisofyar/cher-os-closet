@@ -145,6 +145,9 @@ a:hover { color: #15143F; }
 .big.hot { background: #FF8FC7; box-shadow: 0 0 0 3px #15143F, inset 5px 5px 0 #FFD1EA, inset -5px -5px 0 #D9478F; }
 .big.hot:hover { background: #FFA3D2; }
 .big.hot:active { box-shadow: 0 0 0 3px #15143F, inset -5px -5px 0 #FFD1EA, inset 5px 5px 0 #D9478F; }
+.big.small { min-height: 0; font-size: 18px; padding: 8px 10px; box-shadow: 0 0 0 3px #15143F, inset 3px 3px 0 #D8D6FF, inset -3px -3px 0 #6763C4; }
+.big.small:active { box-shadow: 0 0 0 3px #15143F, inset -3px -3px 0 #D8D6FF, inset 3px 3px 0 #6763C4; }
+.big.try-on-you { min-height: 140px; font-size: 28px; }
 .big:focus-visible, .bar a:focus-visible, .tr:focus-visible { outline: 3px dashed #E0245E; outline-offset: 4px; }
 
 .tr {

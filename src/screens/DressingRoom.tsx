@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Monitor } from '../components/Monitor';
 import { Pocket } from '../components/Pocket';
 import { useIsPocket } from '../hooks/useIsPocket';
@@ -53,6 +53,7 @@ const SmallTri = ({ dir }: { dir: 'left' | 'right' }) => (
 
 export function DressingRoom() {
   const pocket = useIsPocket();
+  const navigate = useNavigate();
   /** Which picker the handheld d-pad is driving: 0 = top, 1 = bottom. */
   const [sel, setSel] = useState(0);
   const [gender, setGender] = useState<Gender>('w');
@@ -99,7 +100,9 @@ export function DressingRoom() {
           left: { label: 'Left: previous item', onClick: cycle(current.set, current.len, -1) },
           right: { label: 'Right: next item', onClick: cycle(current.set, current.len, 1) },
           b: { label: 'B: back', onClick: () => setFull(false) },
-          a: { label: full ? 'A: back' : 'A: try it on', onClick: () => setFull((f) => !f) },
+          a: full
+            ? { label: 'A: try it on on you', onClick: () => navigate('/try-on') }
+            : { label: 'A: try it on', onClick: () => setFull(true) },
           select: { label: 'Select: switch women’s and men’s', onClick: () => switchGender(gender === 'm' ? 'w' : 'm') },
           start: { label: 'Start: auto style', onClick: autoStyle },
         }}
@@ -113,9 +116,15 @@ export function DressingRoom() {
                 ON YOU
               </Link>
             </div>
-            <button className="pk-sb hot" onClick={() => setFull((f) => !f)}>
-              {full ? 'Back' : 'Try it on'}
-            </button>
+            {full ? (
+              <Link className="pk-sb hot" to="/try-on">
+                On you
+              </Link>
+            ) : (
+              <button className="pk-sb hot" onClick={() => setFull(true)}>
+                Try it on
+              </button>
+            )}
           </div>
         }
       >
@@ -271,17 +280,24 @@ export function DressingRoom() {
       </main>
 
       <div className={side}>
-        <button className="big" onClick={() => setFull((f) => !f)}>
-          {full ? (
-            'Back'
-          ) : (
-            <>
-              Try It
+        {full ? (
+          <>
+            <button className="big small" onClick={() => setFull(false)}>
+              Back
+            </button>
+            <Link className="big hot try-on-you" to="/try-on">
+              Try it on
               <br />
-              On
-            </>
-          )}
-        </button>
+              on you
+            </Link>
+          </>
+        ) : (
+          <button className="big" onClick={() => setFull(true)}>
+            Try It
+            <br />
+            On
+          </button>
+        )}
       </div>
     </Monitor>
   );
