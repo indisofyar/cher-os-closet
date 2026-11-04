@@ -28,13 +28,40 @@ const DESCRIBE: Record<string, string> = {
   'White sneakers': 'chunky white sneakers',
 };
 
+/**
+ * Poses for the generated photo. One is picked at random for each try-on so the
+ * wardrobe screen doesn't show the same stiff stance every time. Every pose keeps
+ * the whole body, head to toe, in frame and facing roughly towards the camera.
+ */
+export const POSES: string[] = [
+  // The signature wardrobe-computer pose, straight out of the classic 90s teen-movie closet scene.
+  'the classic 90s wardrobe-computer pose: standing facing the camera with knees together and feet a little apart, toes turned slightly inwards; both arms held stiffly out and down at about 30 degrees from the body, elbows straight, wrists flexed so the hands flare outwards with fingers spread like a mannequin showing off the outfit; head tilted very slightly, a sweet closed-mouth smile',
+  'a confident model strut caught mid-step towards the camera, one foot crossing in front of the other, one hand on the hip, chin up, a knowing smirk',
+  'a playful twirl: body turned three-quarters, weight on one leg with the other knee bent and heel kicked up behind, both arms out to the sides for balance, laughing',
+  'a cheeky over-the-shoulder look: back half-turned to the camera, glancing back over the shoulder with a wink, one hand resting on the hip',
+  'a "whatever!" pose: both hands making a W with thumbs and forefingers held up in front of the chest, hip popped to one side, eyebrows raised, sassy expression',
+  'a jump for joy: caught mid-air, feet off the ground with knees bent and heels kicked back, both arms flung up overhead, big open-mouthed smile (keep the feet inside the frame)',
+  'a cool lean: shoulders back, weight on one leg, arms crossed loosely over the chest, head tilted, one eyebrow raised with a confident half-smile',
+  'a phone-call pose: one hand holding an imaginary chunky 90s phone to the ear, the other hand flung out to the side mid-gossip, one foot popped up behind, gasping in delight',
+  'a peace-sign pose: one hand throwing a peace sign beside the face, the other hand on the hip, feet planted apart, a big grin',
+  'a runway finale: standing tall with feet in a wide confident stance, both hands on the hips, shoulders squared, a fierce, glamorous look straight down the lens',
+  'a blowing-a-kiss pose: one hand lifted away from the lips as if just blowing a kiss, the other arm out to the side, one knee bent inward, a flirty smile',
+  'a shopping-spree pose: both arms raised in excitement with fists pumped, one leg lifted with the knee bent, as if just found the perfect outfit, delighted grin',
+];
+
+/** The signature pose comes up more often than the others (about 1 in 4 try-ons). */
+export function pickPose(random = Math.random): string {
+  if (random() < 0.25) return POSES[0];
+  return POSES[1 + Math.floor(random() * (POSES.length - 1))];
+}
+
 export type TryOnOutfit = { gender: Gender; top: string; bottom: string };
 
 /**
  * Returns the prompt for an outfit, or null if the outfit isn't in the wardrobe.
  * Only catalogue garments are accepted, so the server never forwards free text to the model.
  */
-export function buildTryOnPrompt({ gender, top, bottom }: TryOnOutfit): string | null {
+export function buildTryOnPrompt({ gender, top, bottom }: TryOnOutfit, pose = pickPose()): string | null {
   const wardrobe = WARDROBE[gender];
   if (!wardrobe) return null;
   const t = wardrobe.tops.find((g) => g.name === top);
@@ -50,8 +77,8 @@ export function buildTryOnPrompt({ gender, top, bottom }: TryOnOutfit): string |
     'Keep the same person: identical face, hair, skin tone, body shape and proportions. Do not change who they are or make them look like anyone else.',
     // Clothes
     `Outfit: ${clothes}. Remove the clothes they are currently wearing and replace them with this outfit only.`,
-    // Pose and framing, like a paper doll in a dress-up program
-    'Pose them like a paper doll in a dress-up game: standing straight and facing the camera, feet together with toes slightly turned out, arms held a little away from the body with relaxed open hands, a slight smile.',
+    // Pose: varies per try-on so it feels alive, not stiff
+    `Pose: ${pose}. Make the pose look natural and full of personality, with fun, expressive body language, not stiff. Re-pose the person fully; do not copy the pose from the original photo.`,
     'Full body, head to toe, nothing cropped. The figure is centred and fills almost the full height of a tall portrait frame, with only a small margin above the head and below the feet.',
     // Backdrop: must be flat so it blends into the app's white panel
     'Background: one flat, even, pure bright white (#FFFFFF) from edge to edge, like a cut-out pasted on a white page. No floor, no horizon line, no gradient, no vignette, no shadow on the background, no props.',
