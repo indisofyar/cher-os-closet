@@ -284,7 +284,6 @@ export function BodyPhoto() {
       footer={
         <div className="bar">
           <span className="bar-label">STEP 1 · BODY PHOTO</span>
-          <Link to="/wardrobe">SKIP FOR NOW</Link>
         </div>
       }
     >
