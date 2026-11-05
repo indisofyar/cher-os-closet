@@ -257,7 +257,7 @@ export function TryOn() {
     >
       <div className={side}>
         <Link className="big grey try-else" to="/wardrobe">
-          Try something else on
+          Back to wardrobe
         </Link>
       </div>
 
