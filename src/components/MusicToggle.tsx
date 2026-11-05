@@ -89,7 +89,7 @@ export function MusicToggle() {
       <span className="music-eq" aria-hidden="true">
         <i /><i /><i /><i />
       </span>
-      <span className="music-text">{playing ? 'MUSIC ON' : 'MUSIC OFF'}</span>
+      <span className="music-text">MUSIC</span>
     </button>
   );
 }
