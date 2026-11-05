@@ -7,6 +7,7 @@ import { BodyPhoto } from './screens/BodyPhoto';
 import { DressingRoom } from './screens/DressingRoom';
 import { TryOn } from './screens/TryOn';
 import { Stats } from './screens/Stats';
+import { MusicToggle } from './components/MusicToggle';
 import './styles.css';
 import './pocket.css';
 
@@ -22,6 +23,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/stats" element={<Stats />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <MusicToggle />
       </HashRouter>
     </AppStateProvider>
   </StrictMode>,

@@ -408,3 +408,35 @@ a:hover { color: #15143F; }
 @media (prefers-reduced-motion: reduce) {
   .hIn, .rcpt, .rrow, .rrow b, .rcpt-verdict, .vstk { animation: none; }
 }
+
+/* ---------- Music toggle (desktop only, sits on the room, outside the monitor) ---------- */
+.music-toggle {
+  position: fixed; right: 24px; bottom: 24px; z-index: 50;
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; box-sizing: border-box;
+  padding: 6px 18px 6px 14px; border-radius: 999px; cursor: pointer;
+  font-family: 'Silkscreen', monospace; font-size: 14px; letter-spacing: 2px; color: #15143F;
+  background: linear-gradient(180deg, #FFFFFF, #E9EDF1);
+  border: 1px solid rgba(0,0,0,.14);
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,.12), 0 8px 18px rgba(168,42,90,.28);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.music-toggle:hover { transform: translateY(-1px); box-shadow: inset 0 -3px 0 rgba(0,0,0,.12), 0 10px 22px rgba(168,42,90,.36); }
+.music-toggle:active { transform: translateY(1px); box-shadow: inset 0 2px 0 rgba(0,0,0,.12), 0 4px 10px rgba(168,42,90,.28); }
+.music-toggle:focus-visible { outline: 3px dashed #E0245E; outline-offset: 3px; }
+.music-toggle.compact { padding: 0; width: 48px; height: 48px; justify-content: center; gap: 0; right: 16px; bottom: 16px; }
+.music-toggle.compact .music-led, .music-toggle.compact .music-text { display: none; }
+.music-toggle.compact .music-eq i { background: #8E7BD6; }
+.music-toggle.compact.on .music-eq i { background: #E8578C; }
+.music-led { width: 10px; height: 10px; border-radius: 50%; background: #AEB6BF; box-shadow: inset 0 1px 2px rgba(0,0,0,.35); }
+.music-toggle.on .music-led { background: #5CF08A; box-shadow: 0 0 8px #5CF08A; }
+.music-eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; }
+.music-eq i { width: 3px; height: 4px; background: #E8578C; }
+.music-toggle.on .music-eq i { animation: music-eq .8s steps(4) infinite alternate; }
+.music-toggle.on .music-eq i:nth-child(2) { animation-delay: -.3s; }
+.music-toggle.on .music-eq i:nth-child(3) { animation-delay: -.55s; }
+.music-toggle.on .music-eq i:nth-child(4) { animation-delay: -.15s; }
+@keyframes music-eq { from { height: 3px; } to { height: 14px; } }
+@media (prefers-reduced-motion: reduce) {
+  .music-toggle, .music-toggle.on .music-eq i { transition: none; animation: none; }
+  .music-toggle.on .music-eq i { height: 10px; }
+}
