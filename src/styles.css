@@ -155,6 +155,10 @@ a:hover { color: #15143F; }
 .big.hot:active { box-shadow: 0 0 0 3px #15143F, inset -5px -5px 0 #FFD1EA, inset 5px 5px 0 #D9478F; }
 .big.small { min-height: 0; font-size: 18px; padding: 8px 10px; box-shadow: 0 0 0 3px #15143F, inset 3px 3px 0 #D8D6FF, inset -3px -3px 0 #6763C4; }
 .big.small:active { box-shadow: 0 0 0 3px #15143F, inset -3px -3px 0 #D8D6FF, inset 3px 3px 0 #6763C4; }
+.big.grey { color: #15143F; background: #C9CDD3; box-shadow: 0 0 0 3px #15143F, inset 5px 5px 0 #EEF0F3, inset -5px -5px 0 #8A929C; }
+.big.grey:hover { background: #D6D9DE; color: #15143F; }
+.big.grey:active { box-shadow: 0 0 0 3px #15143F, inset -5px -5px 0 #EEF0F3, inset 5px 5px 0 #8A929C; }
+.big.try-else { font-size: clamp(10px, 2.1cqw, 20px); letter-spacing: 0; line-height: 1.15; padding: 12px 6px; }
 .big.try-on-you { min-height: 140px; font-size: 28px; }
 .big:focus-visible, .bar a:focus-visible, .tr:focus-visible { outline: 3px dashed #E0245E; outline-offset: 4px; }
 

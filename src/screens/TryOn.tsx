@@ -25,7 +25,7 @@ function Stickers() {
         <path d="M50 88 C20 66 6 50 6 32 C6 18 17 8 30 8 C40 8 46 14 50 22 C54 14 60 8 70 8 C83 8 94 18 94 32 C94 50 80 66 50 88 Z" fill="#E0245E" stroke="#FFFFFF" strokeWidth="9" strokeLinejoin="round" />
         <path d="M50 88 C20 66 6 50 6 32 C6 18 17 8 30 8 C40 8 46 14 50 22 C54 14 60 8 70 8 C83 8 94 18 94 32 C94 50 80 66 50 88 Z" fill="none" stroke="#15143F" strokeWidth="2.5" strokeLinejoin="round" />
       </svg>
-      <svg className="paste pasted sticker-star" style={{ ...v('-12deg', '2.05s'), position: 'absolute', zIndex: 4, left: 26, bottom: 200 }} width="92" height="92" viewBox="0 0 100 100" aria-hidden="true">
+      <svg className="paste pasted sticker-star" style={{ ...v('-12deg', '2.05s'), position: 'absolute', zIndex: 4, left: 26, bottom: 330 }} width="92" height="92" viewBox="0 0 100 100" aria-hidden="true">
         <path d="M50 4 L62 36 L96 38 L69 59 L79 94 L50 74 L21 94 L31 59 L4 38 L38 36 Z" fill="#F2C230" stroke="#FFFFFF" strokeWidth="9" strokeLinejoin="round" />
         <path d="M50 4 L62 36 L96 38 L69 59 L79 94 L50 74 L21 94 L31 59 L4 38 L38 36 Z" fill="none" stroke="#15143F" strokeWidth="2.5" strokeLinejoin="round" />
       </svg>
@@ -255,7 +255,11 @@ export function TryOn() {
         <MonitorNav current="/try-on" />
       }
     >
-      <div className={side} />
+      <div className={side}>
+        <Link className="big grey try-else" to="/wardrobe">
+          Try something else on
+        </Link>
+      </div>
 
       <main className="panel tryon">
         <div className="stage" style={stageStyle}>
